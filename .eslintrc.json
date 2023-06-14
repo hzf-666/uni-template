@@ -1,0 +1,52 @@
+{
+  "extends": [
+    "./.comlint/.eslintrc.json"
+  ],
+  "globals": {
+    /* uni-app */
+    "uni": "readonly",
+    "onLoad": "readonly",
+    "onReady": "readonly",
+    "onShow": "readonly",
+    "onHide": "readonly",
+    /* vue3 */
+    "getCurrentInstance": "readonly",
+    "ref": "readonly",
+    "isRef": "readonly",
+    "computed": "readonly",
+    "watch": "readonly",
+    "nextTick": "readonly",
+    "onMounted": "readonly",
+    "onUpdated": "readonly",
+    "onUnmounted": "readonly",
+    "onBeforeMount": "readonly",
+    "onBeforeUpdate": "readonly",
+    "onBeforeUnmount": "readonly",
+    "onActivated": "readonly",
+    "onDeactivated": "readonly",
+    "toRefs": "readonly",
+    "h": "readonly",
+    /* pinia */
+    "createPinia": "readonly",
+    "defineStore": "readonly",
+    "storeToRefs": "readonly",
+    /* 自定义 */
+    "http": "readonly",
+    "store": "readonly",
+    "useListener": "readonly",
+    "useTimer": "readonly",
+    "dayjsFormat": "readonly",
+    "mexp": "readonly",
+    "cache": "readonly",
+    "typeOf": "readonly",
+    "deepCopy": "readonly",
+    "recursion": "readonly",
+    "debounce": "readonly",
+    "throttle": "readonly",
+    "els": "readonly",
+    "openUrl": "readonly",
+    "closeUrl": "readonly",
+    "isEqual": "readonly",
+    "isWhite": "readonly"
+  }
+}
