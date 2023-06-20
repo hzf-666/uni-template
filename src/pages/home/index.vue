@@ -3,7 +3,26 @@ const title = ref('Hello');
 const { httpCount } = storeToRefs(store.useGlobal());
 
 onLoad(() => {
-  http().then(res => {
+  http(['/api/inner/common/queryToken', {
+    // method: 'post1',
+    // params: {
+    //   aaa: 666,
+    // },
+    // data: {
+    //   bbb: 777,
+    // },
+  }]).then(res => {
+    console.log(1);
+    console.log(res);
+  });
+  setTimeout(() => {
+    http(['/api/inner/common/user']).then(res => {
+      console.log(2);
+      console.log(res);
+    });
+  }, 1000);
+  http(['/api/inner/common/permission']).then(res => {
+    console.log(3);
     console.log(res);
   });
   // uni.login({
@@ -13,10 +32,14 @@ onLoad(() => {
   //   },
   // });
 });
+function test() {
+  http(['/api/inner/common/user']);
+}
 </script>
 
 <template>
   <view class="content">
+    <button @click="test">test</button>
     {{ httpCount }}
     <image class="logo" src="/static/logo.png" @click="httpCount++" />
     <view class="text-area">
@@ -25,7 +48,7 @@ onLoad(() => {
   </view>
 </template>
 
-<style>
+<style lang="scss" scoped>
 .content {
   display: flex;
   flex-direction: column;
