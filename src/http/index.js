@@ -12,6 +12,7 @@ async function http([httpURL, options] = [], config) {
     apiURL: url,
     method: typeof options?.method === 'string' ? options.method.toUpperCase() : 'GET',
     data: options?.body || options?.data,
+    args: arguments,
   };
   config = {
     ...config,
@@ -51,7 +52,6 @@ async function http([httpURL, options] = [], config) {
 
     uni.request({
       ...options,
-      args: arguments,
       success({ statusCode, data }) {
         result = statusCode == 200 ? data : { code: statusCode, data: {}, message: '请求服务器出错！错误状态码：' + statusCode };
       },
@@ -82,22 +82,16 @@ http.lock = function(res, args, callback) {
       http.lockList.push({ resolve, args });
     });
   }
-  callback && callback(!http.isLock);
-  http.isLock = true;
+  if (!http.isLock) {
+    http.isLock = true;
+    callback && callback();
+  }
 };
 http.unlock = function() {
-  setTimeout(async() => {
+  setTimeout(() => {
     http.isLock = false;
-    // http.lockList.forEach(({ resolve, args }) => resolve(http(...args)));
-    // const tmpList = JSON.parse(JSON.stringify(http.lockList));
-    // console.log(tmpList);
-    // console.log(await ));
-    return Promise.all(http.lockList.map(({ args }) => http(...args))).then(res => {
-      http.lockList.forEach(({ resolve }, i) => resolve(res[i]));
-      http.lockList = [];
-    });
-    // console.log(tmpList.map(({ resolve, args }) => new Promise(aaa => aaa(resolve(http(...args))))));
-    // return Promise.all([]);
+    http.lockList.forEach(({ resolve, args }) => resolve(http(...args)));
+    http.lockList = [];
   });
 };
 
@@ -111,5 +105,34 @@ function showTip(msg, options = {}) {
     });
   }
 }
+
+http.upload = function([httpURL, options] = [], config) {
+  options = {
+    header: {
+      Authorization: cache().get('token'),
+      ...options?.header,
+    },
+    name: 'file',
+    ...options,
+  };
+  config = {
+    ...config,
+    tipOptions: {
+      show: true,
+      success: '',
+      fail: '',
+      props: {},
+      ...config?.tipOptions,
+    },
+  };
+
+  return new Promise((resolve) => {
+    // let result = { code: 0, data: {}, message: '无法连接服务器！' }, isShowTip = false, tipProps = {};
+    // isShowTip = config?.tipOptions?.show;
+    // tipProps = config?.tipOptions?.props;
+
+    // const successTip = config?.tipOptions?.success, failTip = config?.tipOptions?.fail;
+  });
+};
 
 export default http;

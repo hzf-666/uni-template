@@ -3,44 +3,38 @@ const title = ref('Hello');
 const { httpCount } = storeToRefs(store.useGlobal());
 
 onLoad(() => {
-  http(['/api/inner/common/queryToken', {
-    // method: 'post1',
-    // params: {
-    //   aaa: 666,
-    // },
-    // data: {
-    //   bbb: 777,
-    // },
-  }]).then(res => {
-    console.log(1);
-    console.log(res);
-  });
-  setTimeout(() => {
-    http(['/api/inner/common/user']).then(res => {
-      console.log(2);
-      console.log(res);
-    });
-  }, 1000);
-  http(['/api/inner/common/permission']).then(res => {
-    console.log(3);
-    console.log(res);
-  });
-  // uni.login({
-  //   provider: 'weixin',
-  //   success: (result) => {
-  //     console.log(result);
-  //   },
-  // });
+  console.log('home load');
 });
-function test() {
-  http(['/api/inner/common/user']);
+function onUpload() {
+  // uni.chooseFile({
+  uni.chooseImage({
+    count: 2,
+    success: (imgPath) => {
+      console.log(imgPath.tempFilePaths);
+      uni.uploadFile({
+        url: 'http://localhost:3000/api/inner/common/upload',
+        header: {
+          Authorization: cache().get('token'),
+        },
+        // fileType: 'image',
+        // files: imgPath.tempFilePaths.map(path => ({ filePath: path, name: 'file' })),
+        files: imgPath.tempFilePaths,
+        // filePath: imgPath.tempFilePaths[0],
+        name: 'file',
+        success: (res) => {
+          console.log(res);
+        },
+        // fail: (error) => {}
+      });
+    }
+  });
 }
 </script>
 
 <template>
   <view class="content">
-    <button @click="test">test</button>
     {{ httpCount }}
+    <button @click="onUpload">上传文件</button>
     <image class="logo" src="/static/logo.png" @click="httpCount++" />
     <view class="text-area">
       <text class="title">{{ title }}</text>

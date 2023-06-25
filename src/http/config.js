@@ -15,6 +15,7 @@ export const white = {
   token: [],
   message: [],
   httpCount: [],
+  request: [],
   response: [],
 };
 
