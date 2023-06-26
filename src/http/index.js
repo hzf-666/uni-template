@@ -25,17 +25,7 @@ async function http([httpURL, options] = [], config) {
     },
   };
 
-  if (isObj(options.params)) {
-    const arr = [];
-    for (const k in options.params) {
-      arr.push(`${ k }=${ options.params[k] }`);
-    }
-    if (arr.length) {
-      options.url = `${ options.url }${ options.url.includes('?') ? '&' : '?' }${ arr.join('&') }`;
-    }
-  }
-  if (options.body) delete options.body;
-  if (options.method === 'GET') delete options.data;
+  handleOptions(options);
 
   if (http.isLock) {
     return new Promise(resolve => {
@@ -43,32 +33,7 @@ async function http([httpURL, options] = [], config) {
     });
   }
 
-  return new Promise((resolve) => {
-    let result = { code: 0, data: {}, message: '无法连接服务器！' }, isShowTip = false, tipProps = {};
-    isShowTip = config?.tipOptions?.show;
-    tipProps = config?.tipOptions?.props;
-
-    const successTip = config?.tipOptions?.success, failTip = config?.tipOptions?.fail;
-
-    uni.request({
-      ...options,
-      success({ statusCode, data }) {
-        result = statusCode == 200 ? data : { code: statusCode, data: {}, message: '请求服务器出错！错误状态码：' + statusCode };
-      },
-      complete() {
-        if (result.code == 200) {
-          tipProps.icon = 'success';
-          if (successTip) result.message = successTip;
-        } else {
-          tipProps.icon = 'none';
-          if (failTip) result.message = failTip;
-        }
-        if (isWhite(url, white.message)) result.message = '';
-        if (isShowTip) showTip(result.message, tipProps);
-        resolve(result);
-      },
-    });
-  });
+  return handleHttp('request', { config, options, url });
 }
 
 ['get', 'put', 'post', 'delete'].forEach(method => {
@@ -88,10 +53,17 @@ http.lock = function(res, args, callback) {
   }
 };
 http.unlock = function() {
-  setTimeout(() => {
-    http.isLock = false;
-    http.lockList.forEach(({ resolve, args }) => resolve(http(...args)));
-    http.lockList = [];
+  return new Promise((resolve) => {
+    setTimeout(async() => {
+      http.isLock = false;
+      Promise.all(http.lockList.map(({ args }) => http(...args))).then((resArr) => {
+        resArr.forEach((res, i) => {
+          http.lockList[i].resolve(res);
+        });
+        http.lockList = [];
+        resolve();
+      });
+    });
   });
 };
 
@@ -107,6 +79,8 @@ function showTip(msg, options = {}) {
 }
 
 http.upload = function([httpURL, options] = [], config) {
+  const { baseURL, url } = getHttpURL(httpURL);
+
   options = {
     header: {
       Authorization: cache().get('token'),
@@ -114,6 +88,8 @@ http.upload = function([httpURL, options] = [], config) {
     },
     name: 'file',
     ...options,
+    url: `${ baseURL }${ url }`,
+    formData: options?.body || options?.formData,
   };
   config = {
     ...config,
@@ -126,13 +102,53 @@ http.upload = function([httpURL, options] = [], config) {
     },
   };
 
-  return new Promise((resolve) => {
-    // let result = { code: 0, data: {}, message: '无法连接服务器！' }, isShowTip = false, tipProps = {};
-    // isShowTip = config?.tipOptions?.show;
-    // tipProps = config?.tipOptions?.props;
+  handleOptions(options);
 
-    // const successTip = config?.tipOptions?.success, failTip = config?.tipOptions?.fail;
-  });
+  return handleHttp('uploadFile', { config, options, url });
 };
+
+function handleOptions(options) {
+  if (isObj(options.params)) {
+    const arr = [];
+    for (const k in options.params) {
+      arr.push(`${ k }=${ options.params[k] }`);
+    }
+    if (arr.length) {
+      options.url = `${ options.url }${ options.url.includes('?') ? '&' : '?' }${ arr.join('&') }`;
+    }
+  }
+  if (options.body) delete options.body;
+  if (options.method === 'GET') delete options.data;
+}
+function handleHttp(fn, { config, options, url } = {}) {
+  return new Promise((resolve) => {
+    let result = { code: 0, data: {}, message: '无法连接服务器！' }, isShowTip = false, tipProps = {};
+    isShowTip = config?.tipOptions?.show;
+    tipProps = config?.tipOptions?.props;
+
+    const successTip = config?.tipOptions?.success, failTip = config?.tipOptions?.fail;
+
+    uni[fn]({
+      ...options,
+      success({ statusCode, data }) {
+        result = statusCode == 200
+          ? typeof data === 'string' ? JSON.parse(data) : data
+          : { code: statusCode, data: {}, message: '请求服务器出错！错误状态码：' + statusCode };
+      },
+      complete() {
+        if (result.code == 200) {
+          tipProps.icon = 'success';
+          if (successTip) result.message = successTip;
+        } else {
+          tipProps.icon = 'none';
+          if (failTip) result.message = failTip;
+        }
+        if (isWhite(url, white.message)) result.message = '';
+        if (isShowTip) showTip(result.message, tipProps);
+        resolve(result);
+      },
+    });
+  });
+}
 
 export default http;

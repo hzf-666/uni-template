@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import uni from '@dcloudio/vite-plugin-uni';
 import autoImport from 'unplugin-auto-import/vite';
+import postcssRelaxedUnit from 'postcss-relaxed-unit';
 import * as hooks from './src/hooks';
 import * as utils from './src/utils';
 
@@ -34,4 +35,15 @@ export default defineConfig({
       ],
     }),
   ],
+  css: {
+    postcss: {
+      plugins: [
+        postcssRelaxedUnit({
+          rules: {
+            rx: `mul(750).div(${ 750 }).unit(rpx)`,
+          },
+        }),
+      ],
+    },
+  },
 });

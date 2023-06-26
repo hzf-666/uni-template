@@ -4,7 +4,7 @@
   ],
   "rules": {
     "unit-no-unknown": [true, {
-      "ignoreUnits": ["rpx"]
+      "ignoreUnits": ["rpx", "rx"]
     }]
   }
 }

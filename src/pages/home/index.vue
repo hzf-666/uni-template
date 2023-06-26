@@ -1,32 +1,21 @@
 <script setup>
+import { uploadFile } from '@/api';
+
 const title = ref('Hello');
 const { httpCount } = storeToRefs(store.useGlobal());
 
 onLoad(() => {
-  console.log('home load');
+  console.log('Home Load');
 });
 function onUpload() {
   // uni.chooseFile({
   uni.chooseImage({
-    count: 2,
-    success: (imgPath) => {
-      console.log(imgPath.tempFilePaths);
-      uni.uploadFile({
-        url: 'http://localhost:3000/api/inner/common/upload',
-        header: {
-          Authorization: cache().get('token'),
-        },
-        // fileType: 'image',
-        // files: imgPath.tempFilePaths.map(path => ({ filePath: path, name: 'file' })),
-        files: imgPath.tempFilePaths,
-        // filePath: imgPath.tempFilePaths[0],
-        name: 'file',
-        success: (res) => {
-          console.log(res);
-        },
-        // fail: (error) => {}
+    count: 1,
+    success: ({ tempFilePaths }) => {
+      uploadFile({ filePath: tempFilePaths[0] }).then(res => {
+        console.log(res);
       });
-    }
+    },
   });
 }
 </script>

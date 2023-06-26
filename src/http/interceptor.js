@@ -3,13 +3,12 @@ import { white } from './config.js';
 
 const { httpCount } = storeToRefs(store.useGlobal());
 
-let locking = true, lockTimer = null;
-function lockDelay() {
-  lockTimer && clearTimeout(lockTimer);
+let locking = true;
+function releaseLock() {
   locking = false;
-  lockTimer = setTimeout(() => { // 15秒后重新加锁
+  http.unlock().then(() => {
     locking = true;
-  }, 15000);
+  });
 }
 
 uni.addInterceptor('request', {
@@ -46,14 +45,14 @@ uni.addInterceptor('request', {
     }
 
     if (locking && [401].includes(res.data.code)) {
-      // http.lock(res, config.args, async() => {
+      // http.lock(res, config.args, async() => { // 添加 http 锁，实现静默登录
       //   await new Promise((resovle) => {
       //     setTimeout(() => {
       //       resovle({
       //         code: 200,
       //         message: '',
       //         data: {
-      //           token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWNjb3VudCI6ImFkbWluIiwicGFzc3dvcmQiOiJKai9zV0lZVVNhck1IREtLU3Y5a3IvVEdMZlNpMVFzL0lIK29tMjRrTEpxbmVPZW91dS8rK0Z0c3B0TG4zQmIvQ25ZTldjRThJNDlyemNNdmpPbk1ZZz09Iiwicm9sZUlkIjowLCJzdGF0ZUlkIjoxLCJhY2NvdW50VHlwZUlkIjoxLCJpYXQiOjE2ODc2ODIwNDUsImV4cCI6MTY4Nzc2ODQ0NX0.bW3fsIvYy_PnAXV_yEyb4-poYrx_MQGJ5jC_6mO815o',
+      //           token: '',
       //         },
       //       });
       //     }, 100);
@@ -62,8 +61,7 @@ uni.addInterceptor('request', {
       //       cache().set('token', res.data.token);
       //     }
       //   });
-      //   lockDelay();
-      //   http.unlock();
+      //   releaseLock();
       // });
     }
   },
@@ -75,6 +73,6 @@ function setHttpCount(finished = false) {
     if (httpCount.value <= 0) uni.hideLoading();
   } else {
     httpCount.value++;
-    if (httpCount.value > 0) uni.showLoading({ mask: true });
+    if (httpCount.value > 0) uni.showLoading({ title: '加载中...', mask: true });
   }
 }
