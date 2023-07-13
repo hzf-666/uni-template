@@ -21,28 +21,15 @@ uni.addInterceptor('request', {
     }
 
     if (!isWhite(req.apiURL, white.httpCount)) {
-      new Promise((resolve, reject) => {
-        req.cancelHttpCount = reject;
-        setTimeout(() => {
-          resolve();
-        }, 100);
-      }).then(() => {
-        delete req.cancelHttpCount;
+      req.httpCountTimer = setTimeout(() => {
+        clearTimeout(req.httpCountTimer);
+        req.httpCountTimer = null;
         setHttpCount();
-      }).catch(() => {});
+      }, 100);
     }
   },
   success(res, config) {
     if (isWhite(config.apiURL, white.response)) return;
-
-    const { apiURL, cancelHttpCount } = config;
-    if (!isWhite(apiURL, white.httpCount)) {
-      if (cancelHttpCount) {
-        cancelHttpCount();
-      } else {
-        setHttpCount(true);
-      }
-    }
 
     if (locking && [401].includes(res.data.code)) {
       // http.lock(res, config.args, async() => { // 添加 http 锁，实现静默登录
@@ -63,6 +50,16 @@ uni.addInterceptor('request', {
       //   });
       //   releaseLock();
       // });
+    }
+  },
+  complete(res, config) {
+    const { apiURL, httpCountTimer } = config;
+    if (!isWhite(apiURL, white.httpCount)) {
+      if (httpCountTimer) {
+        clearTimeout(httpCountTimer);
+      } else {
+        setHttpCount(true);
+      }
     }
   },
 });

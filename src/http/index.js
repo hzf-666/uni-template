@@ -132,7 +132,7 @@ function handleHttp(fn, { config, options, url } = {}) {
       ...options,
       success({ statusCode, data }) {
         result = statusCode == 200
-          ? typeof data === 'string' ? JSON.parse(data) : data
+          ? data && typeof data === 'string' ? JSON.parse(data) : data
           : { code: statusCode, data: {}, message: '请求服务器出错！错误状态码：' + statusCode };
       },
       complete() {

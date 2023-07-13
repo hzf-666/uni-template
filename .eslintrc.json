@@ -5,6 +5,7 @@
   "globals": {
     /* uni-app */
     "uni": "readonly",
+    "onLaunch": "readonly",
     "onLoad": "readonly",
     "onReady": "readonly",
     "onShow": "readonly",
