@@ -32,6 +32,7 @@
     "defineStore": "readonly",
     "storeToRefs": "readonly",
     /* 自定义 */
+    "standardWidth": "readonly",
     "http": "readonly",
     "store": "readonly",
     "useListener": "readonly",
@@ -45,6 +46,7 @@
     "debounce": "readonly",
     "throttle": "readonly",
     "els": "readonly",
+    "rx": "readonly",
     "openUrl": "readonly",
     "closeUrl": "readonly",
     "isEqual": "readonly",

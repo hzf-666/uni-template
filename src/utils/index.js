@@ -90,6 +90,12 @@ export function els(i) {
   };
 }
 
+export function rx(size) {
+  size = Number(size);
+  if (isNaN(size)) return '';
+  return `${ size * (750 / standardWidth) }rpx`;
+}
+
 export function openUrl(args = []) {
   if (!args[0]) return;
   window.open(args);

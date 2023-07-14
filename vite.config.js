@@ -10,8 +10,13 @@ const autoDirs = {
   utils: Object.keys(utils),
 };
 
+const standardWidth = 750;
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    standardWidth,
+  },
   plugins: [
     uni(),
     autoImport({
@@ -40,7 +45,7 @@ export default defineConfig({
       plugins: [
         postcssRelaxedUnit({
           rules: {
-            rx: `mul(750).div(${ 750 }).unit(rpx)`,
+            rx: `mul(750).div(${ standardWidth }).unit(rpx)`,
           },
         }),
       ],

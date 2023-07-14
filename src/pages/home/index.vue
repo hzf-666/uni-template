@@ -21,14 +21,14 @@ function onUpload() {
 </script>
 
 <template>
-  <view class="content">
+  <div class="content">
     {{ httpCount }}
     <button @click="onUpload">上传文件</button>
-    <image class="logo" src="/static/logo.png" @click="httpCount++" />
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
-    </view>
-  </view>
+    <img class="logo" src="/static/logo.png" @click="httpCount++">
+    <div class="text-area">
+      <span class="title">{{ title }}</span>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
