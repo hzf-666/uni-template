@@ -1,9 +1,12 @@
+import path from 'path';
 import { defineConfig } from 'vite';
 import uni from '@dcloudio/vite-plugin-uni';
 import autoImport from 'unplugin-auto-import/vite';
 import postcssRelaxedUnit from 'postcss-relaxed-unit';
 import * as hooks from './src/hooks';
 import * as utils from './src/utils';
+
+const resolve = dir => path.resolve(__dirname, dir);
 
 const autoDirs = {
   hooks: Object.keys(hooks),
@@ -16,6 +19,12 @@ const standardWidth = 750;
 export default defineConfig({
   define: {
     standardWidth,
+  },
+  resolve: {
+    alias: {
+      '@': resolve('src'),
+      '@c': resolve('src/components'),
+    },
   },
   plugins: [
     uni(),
