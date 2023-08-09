@@ -1,0 +1,26 @@
+.s_box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  > .s_area {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+}
+
+/* #ifdef H5 */
+.s_box > *:not(.s_area) {
+  flex: 0 0 auto;
+}
+/* #endif */
+
+/* #ifndef H5 */
+.s_box :not(.s_area) {
+  flex: 0 0 auto;
+
+  :not(not) {
+    flex: initial;
+  }
+}
+/* #endif */

@@ -10,6 +10,7 @@
     "onReady": "readonly",
     "onShow": "readonly",
     "onHide": "readonly",
+    "getCurrentPages": "readonly",
     /* vue3 */
     "getCurrentInstance": "readonly",
     "ref": "readonly",

@@ -5,6 +5,13 @@
   "rules": {
     "unit-no-unknown": [true, {
       "ignoreUnits": ["rpx", "rx"]
-    }]
+    }],
+    "selector-type-no-unknown": [true, {
+      "ignoreTypes": ["page"]
+    }],
+    "comment-empty-line-before": ["always", {
+      "ignoreComments": ["#endif"]
+    }],
+    "selector-not-notation": "simple"
   }
 }
