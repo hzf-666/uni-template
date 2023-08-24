@@ -13,6 +13,7 @@
     "getCurrentPages": "readonly",
     /* vue3 */
     "getCurrentInstance": "readonly",
+    "reactive": "readonly",
     "ref": "readonly",
     "isRef": "readonly",
     "computed": "readonly",
@@ -44,6 +45,7 @@
     "typeOf": "readonly",
     "deepCopy": "readonly",
     "recursion": "readonly",
+    "delayPromise": "readonly",
     "debounce": "readonly",
     "throttle": "readonly",
     "els": "readonly",
