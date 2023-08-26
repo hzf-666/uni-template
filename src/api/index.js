@@ -15,5 +15,5 @@ export function uploadFile(options, config) { // 上传文件
     fail: '',
     ...config?.tipOptions,
   } };
-  return http.upload([`${ baseUrl }/upload`, options], config);
+  return http.upload([config.action || `${ baseUrl }/upload`, options], config);
 }
