@@ -11,6 +11,13 @@
 			"enablePullDownRefresh": false // 是否开启下拉刷新
 		}
 	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"LayoutPage": "@/components/Layout/page.vue",
+			"MyBadge": "@/components/common/MyBadge.vue"
+		}
+	},
 	// "tabBar": {
   //   "color": "#7A7E83", // tab 上的文字默认颜色
   //   "selectedColor": "#1296db", // tab 上的文字选中时的颜色
@@ -30,7 +37,15 @@
 		{
 			"path": "pages/home/index",
 			"style": {
+				"navigationStyle": "custom",
 				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/user/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "个人中心"
 			}
 		}
 	]

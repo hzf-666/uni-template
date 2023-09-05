@@ -5,6 +5,7 @@
     "node": ">=14.0.0"
   },
   "scripts": {
+    "build:test": "uni build -p mp-weixin -m development",
     "dev:app": "uni -p app",
     "dev:app-android": "uni -p app-android",
     "dev:app-ios": "uni -p app-ios",

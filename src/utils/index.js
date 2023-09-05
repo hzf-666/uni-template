@@ -148,3 +148,31 @@ export function isWhite(target, list = []) {
   }
   return flag;
 }
+
+export function setClass(val) {
+  switch (typeOf(val)) {
+    case 'string':
+      return val.split(' ');
+    case 'array':
+      return val;
+    default:
+      return [val];
+  }
+}
+
+export function setStyle(val) {
+  if (typeOf(val, 'string')) {
+    const obj = {};
+    val.split(';').forEach(item => {
+      if (!item.trim()) return;
+      const arr = item.split(':'), key = arr[0].trim(), value = arr[1].trim();
+      try {
+        obj[key] = JSON.parse(value);
+      } catch {
+        obj[key] = value;
+      }
+    });
+    return obj;
+  }
+  return val;
+}

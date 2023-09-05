@@ -1,6 +1,17 @@
 <script setup>
+const { statusBarHeight, menuHeight, menuPaddingRight } = storeToRefs(store.useGlobal());
+
 onLaunch(() => {
   // console.log('App Launch');
+  uni.getSystemInfo({
+    success(e) {
+      if (!uni.getMenuButtonBoundingClientRect) return;
+      const { width, height, right, top } = uni.getMenuButtonBoundingClientRect();
+      statusBarHeight.value = `${ e.statusBarHeight }px`;
+      menuHeight.value = `${ height + (top - e.statusBarHeight) * 2 }px`;
+      menuPaddingRight.value = `${ width + (e.screenWidth - right) * 2 }px`;
+    },
+  });
 });
 onShow(() => {
   // console.log('App Show');

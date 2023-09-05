@@ -1,57 +1,26 @@
 <script setup>
-import { uploadFile } from '@/api';
-
-const title = ref('Hello');
-const { httpCount } = storeToRefs(store.useGlobal());
-
-onLoad(() => {
-  console.log('Home Load');
-});
-function onUpload() {
-  // uni.chooseFile({
-  uni.chooseImage({
-    count: 1,
-    success: ({ tempFilePaths }) => {
-      uploadFile({ filePath: tempFilePaths[0] }).then(res => {
-        console.log(res);
-      });
-    },
-  });
-}
+//
 </script>
 
 <template>
-  <div class="content">
-    {{ httpCount }}
-    <button @click="onUpload">上传文件</button>
-    <img class="logo" src="/static/logo.png" @click="httpCount++">
-    <div class="text-area">
-      <span class="title">{{ title }}</span>
+  <LayoutPage show-bar>
+    <div class="comp_item">
+      <MyBadge :value="5" inline>首页</MyBadge>
+      <MyBadge my-class="ml_40" is-dot inline>首页</MyBadge>
+      <MyBadge my-class="ml_40" :value="5" :max="4" inline>首页</MyBadge>
+      <MyBadge my-class="ml_40" :value="5" :offset="[-30, 20]" inline>首页</MyBadge>
     </div>
-  </div>
+  </LayoutPage>
 </template>
 
 <style lang="scss" scoped>
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+.comp_item {
+  padding: 30rx;
 
-.logo {
-  width: 200rpx;
-  height: 200rpx;
-  margin: 200rpx auto 50rpx;
-}
-
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+  :deep() {
+    .ml_40 {
+      margin-left: 40rx;
+    }
+  }
 }
 </style>

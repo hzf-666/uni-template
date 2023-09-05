@@ -1,8 +1,9 @@
 const { MODE, VITE_API_URL, VITE_PROD_API_URL } = import.meta.env, modeDev = MODE === 'development';
+const { baseURL } = storeToRefs(store.useSettings());
 
 const proxy = {
   '/api': {
-    dev: VITE_API_URL,
+    dev: baseURL.value || VITE_API_URL,
     prod: VITE_PROD_API_URL,
     // target: '',
     // rewrite: path => path.replace(/^\/api/, ''),
