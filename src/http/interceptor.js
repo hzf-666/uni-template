@@ -66,8 +66,10 @@ uni.addInterceptor('request', {
 
 function setHttpCount(finished = false) {
   if (finished) {
-    if (httpCount.value > 0) httpCount.value--;
-    if (httpCount.value <= 0) uni.hideLoading();
+    if (httpCount.value > 0) {
+      httpCount.value--;
+      if (httpCount.value == 0) uni.hideLoading();
+    }
   } else {
     httpCount.value++;
     if (httpCount.value > 0) uni.showLoading({ title: '加载中...', mask: true });

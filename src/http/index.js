@@ -1,6 +1,8 @@
 import './interceptor.js';
 import { white, getHttpURL, isObj } from './config.js';
 
+const { httpCount } = storeToRefs(store.useGlobal());
+
 async function http([httpURL, options] = [], config) {
   const { baseURL, url } = getHttpURL(httpURL);
 
@@ -68,14 +70,17 @@ http.unlock = function() {
 };
 
 function showTip(msg, options = {}) {
-  if (msg) {
-    uni.showToast({
-      mask: true,
-      duration: 1500,
-      ...options,
-      title: msg,
-    });
+  if (!msg) return;
+  if (httpCount.value > 0) {
+    httpCount.value = 0;
+    uni.hideLoading();
   }
+  uni.showToast({
+    mask: true,
+    duration: 1500,
+    ...options,
+    title: msg,
+  });
 }
 
 http.upload = function([httpURL, options] = [], config) {

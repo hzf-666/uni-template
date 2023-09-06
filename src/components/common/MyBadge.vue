@@ -75,6 +75,7 @@ const badgeStyle = computed(() => {
   .icon_badge_dot,
   .my_badge_content {
     position: absolute;
+    line-height: 1;
     border: 2rx solid #fff;
   }
 

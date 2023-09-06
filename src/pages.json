@@ -15,7 +15,16 @@
 		"autoscan": true,
 		"custom": {
 			"LayoutPage": "@/components/Layout/page.vue",
-			"MyBadge": "@/components/common/MyBadge.vue"
+			"EditorViewer": "@/components/common/EditorViewer.vue",
+			"InfiniteScroll": "@/components/common/InfiniteScroll.vue",
+			"MyBadge": "@/components/common/MyBadge.vue",
+			"MyButton": "@/components/common/MyButton.vue",
+			"MyDialog": "@/components/common/MyDialog.vue",
+			"MyDrawer": "@/components/common/MyDrawer.vue",
+			"MyImage": "@/components/common/MyImage.vue",
+			"MyInput": "@/components/common/MyInput.vue",
+			"MySwiper": "@/components/common/MySwiper.vue",
+			"MyUpload": "@/components/common/MyUpload.vue"
 		}
 	},
 	// "tabBar": {
