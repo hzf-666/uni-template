@@ -136,14 +136,6 @@ watch(modelValue, (newVal) => {
     height: v-bind(_height);
   }
 
-  /* #ifdef MP-WEIXIN */
-  .my_swiper_item {
-    :deep(> view) {
-      height: 100%;
-    }
-  }
-  /* #endif */
-
   .my_swiper_indicator {
     position: absolute;
   }
