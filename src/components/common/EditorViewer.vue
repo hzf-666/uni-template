@@ -49,6 +49,10 @@ const htmlStr = computed(() => {
     .img {
       max-width: 100%;
     }
+
+    .table {
+      width: 100%;
+    }
   }
 }
 </style>

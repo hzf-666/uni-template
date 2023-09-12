@@ -204,6 +204,7 @@ function onClick(...args) {
     padding: 20rx;
     font-size: 24rx;
     color: $textColorSecondary;
+    text-align: center;
     border: 2rx solid $borderColorBase;
   }
 }
