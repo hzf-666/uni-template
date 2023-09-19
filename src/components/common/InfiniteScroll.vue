@@ -8,6 +8,26 @@ const props = defineProps({
     type: [String, Object],
     default: () => ({}),
   },
+  contentClass: {
+    type: [String, Object, Array],
+    default: () => ([]),
+  },
+  contentStyle: {
+    type: [String, Object],
+    default: () => ({}),
+  },
+  itemClass: {
+    type: [String, Object, Array, Function],
+    default: () => ([]),
+  },
+  itemStyle: {
+    type: [String, Object, Function],
+    default: () => ({}),
+  },
+  list: {
+    type: [Array],
+    default: () => (null),
+  },
   height: {
     type: [String],
     default: () => ('100%'),
@@ -49,12 +69,23 @@ const props = defineProps({
     default: () => (null),
   },
 });
-const { myClass, myStyle, height, maxHeight, load, noMore, loadingText, noMoreText, immediate, distance, delay, scrollIntoView } = toRefs(props);
+const {
+  myClass, myStyle, contentClass, contentStyle, itemClass, itemStyle, list,
+  height, maxHeight, load, noMore, loadingText, noMoreText, immediate, distance, delay, scrollIntoView,
+} = toRefs(props);
 
 const emit = defineEmits(['scroll']);
 
 const bindClass = computed(() => setClass(myClass.value));
 const bindStyle = computed(() => setStyle(myStyle.value));
+const bindContentClass = computed(() => setClass(contentClass.value));
+const bindContentStyle = computed(() => setStyle(contentStyle.value));
+function bindItemClass(item) {
+  return setClass(typeOf(itemClass.value, 'function') ? itemClass.value(item) : itemClass.value);
+}
+function bindItemStyle(item) {
+  return setStyle(typeOf(itemStyle.value, 'function') ? itemStyle.value(item) : itemStyle.value);
+}
 
 const style = computed(() => {
   const result = { height: maxHeight.value ? 'auto' : height.value };
@@ -123,7 +154,20 @@ function onScroll(...args) {
     @scrolltolower="handleScrollToLower"
     @scroll="onScroll"
   >
-    <div id="scrollContent"><slot /></div>
+    <div id="scrollContent" :class="bindContentClass" :style="bindContentStyle">
+      <template v-if="list">
+        <div
+          v-for="(item, i) in list"
+          :id="'scrollItem' + i"
+          :key="i"
+          :class="bindItemClass(item)"
+          :style="bindItemStyle(item)"
+        >
+          <slot name="item" :index="i" :item="item" />
+        </div>
+      </template>
+      <slot v-else />
+    </div>
 
     <div v-if="loading || noMore" class="scroll_text">{{ loading ? loadingText : noMoreText }}</div>
   </scroll-view>

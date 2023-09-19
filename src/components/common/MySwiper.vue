@@ -9,11 +9,11 @@ const props = defineProps({
     default: () => ({}),
   },
   itemClass: {
-    type: [String, Object, Array],
+    type: [String, Object, Array, Function],
     default: () => ([]),
   },
   itemStyle: {
-    type: [String, Object],
+    type: [String, Object, Function],
     default: () => ({}),
   },
   modelValue: {
@@ -70,8 +70,12 @@ const emit = defineEmits(['update:modelValue', 'change']);
 
 const bindClass = computed(() => setClass(myClass.value));
 const bindStyle = computed(() => setStyle(myStyle.value));
-const bindItemClass = computed(() => setClass(itemClass.value));
-const bindItemStyle = computed(() => setStyle(itemStyle.value));
+function bindItemClass(item) {
+  return setClass(typeOf(itemClass.value, 'function') ? itemClass.value(item) : itemClass.value);
+}
+function bindItemStyle(item) {
+  return setStyle(typeOf(itemStyle.value, 'function') ? itemStyle.value(item) : itemStyle.value);
+}
 const bindIndicatorStyle = computed(() => {
   return indicatorStyle.value ? setStyle(indicatorStyle.value) : {
     bottom: rx(25),
@@ -115,8 +119,8 @@ watch(modelValue, (newVal) => {
         v-for="(item, i) in list"
         :key="i"
         class="my_swiper_item"
-        :class="bindItemClass"
-        :style="bindItemStyle"
+        :class="bindItemClass(item)"
+        :style="bindItemStyle(item)"
       >
         <slot name="item" :item="item" :index="i" />
       </swiper-item>

@@ -53,6 +53,10 @@ const htmlStr = computed(() => {
     .table {
       width: 100%;
     }
+
+    .p {
+      margin: 16rx 0;
+    }
   }
 }
 </style>
