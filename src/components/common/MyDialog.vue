@@ -1,6 +1,4 @@
 <script setup>
-import { rx } from '../../utils';
-
 const props = defineProps({
   myClass: {
     type: [String, Object, Array],

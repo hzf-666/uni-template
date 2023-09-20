@@ -48,6 +48,7 @@ const htmlStr = computed(() => {
   :deep() {
     .img {
       max-width: 100%;
+      height: auto;
     }
 
     .table {
