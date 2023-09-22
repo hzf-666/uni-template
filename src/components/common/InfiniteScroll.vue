@@ -87,6 +87,11 @@ function bindItemStyle(item) {
   return setStyle(typeOf(itemStyle.value, 'function') ? itemStyle.value(item) : itemStyle.value);
 }
 
+let isUnmounted = false;
+onUnmounted(() => {
+  isUnmounted = true;
+});
+
 const style = computed(() => {
   const result = { height: maxHeight.value ? 'auto' : height.value };
   if (maxHeight.value) result.maxHeight = maxHeight.value;
@@ -117,6 +122,7 @@ function getHeight() {
   });
 }
 async function onLoadImmediately() {
+  if (isUnmounted) return;
   const { viewHeight, contentHeight } = await getHeight();
   if (!noMore.value && contentHeight <= viewHeight) {
     await onLoad.value().then(onLoadImmediately);

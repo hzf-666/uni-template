@@ -3,6 +3,11 @@ import { white, getHttpURL, isObj } from './config.js';
 
 const { httpCount } = storeToRefs(store.useGlobal());
 
+const uniFn = {
+  request: uni.request,
+  uploadFile: uni.uploadFile,
+};
+
 async function http([httpURL, options] = [], config) {
   const { baseURL, url } = getHttpURL(httpURL);
 
@@ -125,7 +130,7 @@ function handleOptions(options) {
   if (options.body) delete options.body;
   if (options.method === 'GET') delete options.data;
 }
-function handleHttp(fn, { config, options, url } = {}) {
+function handleHttp(type, { config, options, url } = {}) {
   return new Promise((resolve) => {
     let result = { code: 0, data: {}, message: '无法连接服务器！' }, isShowTip = false, tipProps = {};
     isShowTip = config?.tipOptions?.show;
@@ -133,7 +138,7 @@ function handleHttp(fn, { config, options, url } = {}) {
 
     const successTip = config?.tipOptions?.success, failTip = config?.tipOptions?.fail;
 
-    uni[fn]({
+    uniFn[type]({
       ...options,
       success({ statusCode, data }) {
         result = statusCode == 200

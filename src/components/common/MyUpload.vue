@@ -54,11 +54,16 @@ function getUploadFn(filePath) {
     return uploadFile({ filePath }, { action: action.value, tipOptions: { show: false } });
   }
 }
+const uniFn = {
+  image: uni.chooseImage,
+  video: uni.chooseVideo,
+  media: uni.chooseMedia,
+};
 function onUpload() {
   const count = multiple.value ? limit.value : 1;
   let fn;
   if (['image', 'video', 'media'].includes(type.value)) {
-    fn = uni[`choose${ type.value[0].toUpperCase() }${ type.value.slice(1) }`];
+    fn = uniFn(type.value);
   } else {
     // #ifdef MP-WEIXIN
     fn = uni.chooseMessageFile;

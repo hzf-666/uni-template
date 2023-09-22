@@ -3,6 +3,9 @@ import MyDrawer from '@c/common/MyDrawer.vue';
 
 const modeDev = import.meta.env.MODE === 'development';
 const { baseURL } = storeToRefs(store.useSettings());
+
+const { statusBarHeight } = storeToRefs(store.useGlobal());
+const top = computed(() => statusBarHeight.value || 0);
 </script>
 
 <template>
@@ -34,10 +37,11 @@ const { baseURL } = storeToRefs(store.useSettings());
 <style lang="scss" scoped>
 .config_icon_wrapper {
   position: fixed;
-  top: 45rx;
+  top: v-bind(top);
   left: 50%;
   z-index: 10;
   padding: 6rx;
+  margin-top: 10rx;
   cursor: pointer;
   background-color: $colorPrimary;
   border-radius: 6rx;
