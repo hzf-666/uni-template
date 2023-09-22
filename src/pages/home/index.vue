@@ -7,11 +7,9 @@ const fileObj = ref({ url: '/static/logo.png' });
 </script>
 
 <template>
-  <LayoutPage show-bar>
-    <template #up="{headerHeight}">
-      <Config :top="headerHeight" />
-    </template>
+  <Config />
 
+  <LayoutPage show-bar>
     <div class="comp_item">
       <MyBadge :value="5" inline>首页</MyBadge>
       <MyBadge my-class="ml_40" is-dot inline>首页</MyBadge>
