@@ -63,7 +63,7 @@ function onUpload() {
   const count = multiple.value ? limit.value : 1;
   let fn;
   if (['image', 'video', 'media'].includes(type.value)) {
-    fn = uniFn(type.value);
+    fn = uniFn[type.value];
   } else {
     // #ifdef MP-WEIXIN
     fn = uni.chooseMessageFile;
