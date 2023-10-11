@@ -167,7 +167,7 @@ function onClick(...args) {
         :mode="fit"
         class="my_image_img"
         :style="imgStyle"
-        :src="src"
+        :src="$resolvePath(src)"
         @error="isError = true"
         @load="isError = false"
         @click="onClick"

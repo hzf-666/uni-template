@@ -171,7 +171,7 @@ onMounted(() => {
       >
         <template v-if="item.iconPath">
           <MyBadge :value="badgeList[i]" :offset="[0, 8]">
-            <img mode="aspectFit" class="tab_bar_icon" :src="'/' + (isPageActive(item.pagePath) ? item.selectedIconPath || item.iconPath : item.iconPath)">
+            <img mode="aspectFit" class="tab_bar_icon" :src="$resolvePath(`/${isPageActive(item.pagePath) ? item.selectedIconPath || item.iconPath : item.iconPath}`)">
           </MyBadge>
         </template>
         <span>{{ item.text }}</span>

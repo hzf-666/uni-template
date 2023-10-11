@@ -137,7 +137,7 @@ watch(fileValue, (newVal) => {
     <slot>
       <div v-if="photo" class="my_upload_photo">
         <template v-if="fileValue?.url">
-          <img mode="aspectFit" class="photo_img" :src="fileValue.url" @click.stop="onPreview()">
+          <img mode="aspectFit" class="photo_img" :src="$resolvePath(fileValue.url)" @click.stop="onPreview()">
           <span class="icon_photo_img_close" @click.stop="fileValue = multiple ? [] : {name: '', url: ''}">×</span>
         </template>
         <span v-else class="icon_photo_img_add">+</span>

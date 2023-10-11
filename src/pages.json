@@ -1,7 +1,7 @@
 {
 	"globalStyle": {
 		"navigationBarTextStyle": "black", // 导航栏标题颜色及状态栏前景颜色，仅支持 black/white
-		"navigationBarTitleText": "", // 导航栏标题文字内容
+		"navigationBarTitleText": "\u200E", // 导航栏标题文字内容
 		"navigationBarBackgroundColor": "#F8F8F8", // 导航栏背景颜色（同状态栏背景色）
 		"onReachBottomDistance": 50, // 页面上拉触底事件触发时距页面底部距离，单位只支持px
 		"mp-weixin": { // 设置编译到 mp-weixin 平台的特定样式

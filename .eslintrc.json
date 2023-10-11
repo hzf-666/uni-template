@@ -37,6 +37,7 @@
     "standardWidth": "readonly",
     "http": "readonly",
     "store": "readonly",
+    "resolvePath": "readonly",
     "useListener": "readonly",
     "useTimer": "readonly",
     "dayjsFormat": "readonly",

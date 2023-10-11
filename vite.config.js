@@ -16,48 +16,57 @@ const autoDirs = {
 const standardWidth = 750;
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  define: {
-    standardWidth,
-  },
-  resolve: {
-    alias: {
-      '@': resolve('src'),
-      '@c': resolve('src/components'),
+export default defineConfig(({ command }) => {
+  const outDir = 'h5';
+  const prod = command === 'build', base = prod ? `/${ outDir }/` : '/';
+
+  return {
+    base,
+    define: {
+      standardWidth,
     },
-  },
-  plugins: [
-    uni(),
-    autoImport({
-      imports: ['vue', 'uni-app', 'pinia', {
-        vue: ['defineEmits', 'defineExpose', 'defineProps'],
-      }],
-      resolvers: [
-        name => {
-          for (const k in autoDirs) {
-            if (autoDirs[k].includes(name)) {
-              return { from: `@/${ k }`, name };
+    resolve: {
+      alias: {
+        '@': resolve('src'),
+        '@c': resolve('src/components'),
+      },
+    },
+    plugins: [
+      uni(),
+      autoImport({
+        imports: ['vue', 'uni-app', 'pinia', {
+          vue: ['defineEmits', 'defineExpose', 'defineProps'],
+        }],
+        resolvers: [
+          name => {
+            for (const k in autoDirs) {
+              if (autoDirs[k].includes(name)) {
+                return { from: `@/${ k }`, name };
+              }
             }
-          }
-          if (name === 'http') {
-            return { from: '@/http', name: 'default' };
-          }
-          if (name === 'store') {
-            return { from: '@/store', name };
-          }
-        },
-      ],
-    }),
-  ],
-  css: {
-    postcss: {
-      plugins: [
-        postcssRelaxedUnit({
-          rules: {
-            rx: `mul(750).div(${ standardWidth }).unit(rpx)`,
+            if (name === 'http') {
+              return { from: '@/http', name: 'default' };
+            }
+            if (name === 'store') {
+              return { from: '@/store', name };
+            }
+            if (name === 'resolvePath') {
+              return { from: '@/resolvePath', name: 'default' };
+            }
           },
-        }),
-      ],
+        ],
+      }),
+    ],
+    css: {
+      postcss: {
+        plugins: [
+          postcssRelaxedUnit({
+            rules: {
+              rx: `mul(750).div(${ standardWidth }).unit(rpx)`,
+            },
+          }),
+        ],
+      },
     },
-  },
+  };
 });
