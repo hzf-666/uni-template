@@ -34,8 +34,16 @@ const props = defineProps({
     type: [Boolean],
     default: () => (true),
   },
+  titleCenter: {
+    type: [Boolean],
+    default: () => (false),
+  },
+  showBack: {
+    type: [Boolean],
+    default: () => (false),
+  },
 });
-const { headerClass, padding, showHeader, showBar, beforeBack, title, headerBg, bg } = toRefs(props);
+const { headerClass, padding, showHeader, showBar, beforeBack, title, headerBg, bg, titleCenter, showBack } = toRefs(props);
 
 const bindHeaderClass = computed(() => setClass(headerClass.value));
 
@@ -104,7 +112,7 @@ const tabBarList = ref([
 const pages = getCurrentPages(), page = pages[pages.length - 1], isPageActive = pagePath => pagePath === page?.route;
 const pageTitle = computed(() => {
   const target = pagesJson.pages.find(item => item.path === page?.route);
-  return title.value || target.style.navigationBarTitleText;
+  return title.value === null ? target.style.navigationBarTitleText : title.value;
 });
 
 function onBack() {
@@ -138,9 +146,9 @@ onMounted(() => {
         :menu-height="_menuHeight"
         :menu-padding-right="menuPaddingRight"
       >
-        <div v-if="pageTitle" class="page_default_header" :class="{is_header_bg: headerBg, is_pr: menuPaddingRight}">
+        <div v-if="pageTitle || showBack" class="page_default_header" :class="{is_header_bg: headerBg, is_pr: menuPaddingRight}">
           <img v-if="pages.length > 1" class="page_header_back fs_0" src="/static/icon/title_return.png" @click="onBack()">
-          <span class="els">{{ pageTitle }}</span>
+          <span v-if="pageTitle" class="page_header_title els" :class="{is_center: titleCenter}">{{ pageTitle }}</span>
         </div>
       </slot>
     </div>
@@ -198,6 +206,9 @@ onMounted(() => {
 }
 
 .page_header {
+  $pd: 30rx;
+  $pl: calc(v-bind(menuPaddingRight) - $pd);
+
   position: relative;
   padding-top: v-bind(statusBarHeight);
 
@@ -206,7 +217,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     height: v-bind(_menuHeight);
-    padding: 0 30rx;
+    padding: 0 $pd;
     font-size: 36rx;
     font-weight: bold;
     color: #fff;
@@ -227,10 +238,23 @@ onMounted(() => {
     }
 
     .page_header_back {
-      width: 40rx;
-      height: 40rx;
-      margin-right: 24rx;
+      $backSize: 40rx;
+      $backMr: 24rx;
+
+      width: $backSize;
+      height: $backSize;
+      margin-right: $backMr;
       cursor: pointer;
+
+      + .page_header_title.is_center {
+        padding-left: calc($pl - $backSize - $backMr);
+      }
+    }
+
+    .page_header_title.is_center {
+      padding-left: $pl;
+      margin: auto;
+      font-size: 34rx;
     }
   }
 }

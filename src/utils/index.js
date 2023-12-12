@@ -106,7 +106,49 @@ export function rx(size) {
 
 export function openUrl(...args) {
   if (!args[0]) return;
+
+  // #ifndef  MP-WEIXIN
   window.open(...args);
+  // #endif
+
+  // #ifdef MP-WEIXIN
+  function openFile(url, optionsToast = {}) {
+    uni.showToast({ icon: 'loading', title: '查看中...', mask: true, ...optionsToast });
+    uni.downloadFile({
+      url,
+      success: (res) => {
+        const contentType = res.header['Content-Type'];
+        if (!contentType) {
+          uni.showToast({ icon: 'none', title: '文件失效' });
+          return;
+        }
+        const [mine, fileType] = contentType.split('/');
+        if (mine == 'image') {
+          uni.hideToast();
+          uni.previewImage({ urls: [url] });
+          return;
+        }
+        const filePath = res.tempFilePath;
+        uni.openDocument({
+          filePath,
+          showMenu: true,
+          fileType,
+          success() {
+            uni.hideToast();
+          },
+          fail() {
+            uni.showToast({ icon: 'none', title: '打开失败' });
+          }
+        });
+      },
+      fail: (e) => {
+        console.error(e);
+        uni.showToast({ icon: 'none', title: '下载失败' });
+      }
+    });
+  }
+  openFile(...args);
+  // #endif
 }
 
 export function closeUrl(...args) {
