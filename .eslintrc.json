@@ -42,6 +42,7 @@
     "useTimer": "readonly",
     "dayjsFormat": "readonly",
     "mexp": "readonly",
+    "psw": "readonly",
     "cache": "readonly",
     "typeOf": "readonly",
     "deepCopy": "readonly",

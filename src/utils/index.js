@@ -1,9 +1,13 @@
 import dayjs from 'dayjs';
 import Mexp from 'math-expression-evaluator';
+import CryptoJS from 'crypto-js';
 import _cache from './cache.js';
 
 export const dayjsFormat = ({ date, format = 'YYYY-MM-DD HH:mm' } = {}) => dayjs(date).format(format);
 export const mexp = new Mexp();
+mexp._eval = mexp.eval;
+mexp.eval = (...args) => mexp._eval(...args).toFixed(10) - 0;
+export const psw = str => str ? CryptoJS.SHA512(str).toString(CryptoJS.enc.Base64) : '';
 export const cache = _cache;
 
 export function typeOf(target, type) { // 判断数据类型
