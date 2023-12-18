@@ -4,7 +4,7 @@ import MyDrawer from '@c/common/MyDrawer.vue';
 const modeDev = import.meta.env.MODE === 'development';
 const { baseURL } = storeToRefs(store.useSettings());
 
-const { statusBarHeight } = storeToRefs(store.useGlobal());
+const { statusBarHeight, menuHeight } = storeToRefs(store.useGlobal());
 const top = computed(() => statusBarHeight.value || 0);
 </script>
 
@@ -16,7 +16,7 @@ const top = computed(() => statusBarHeight.value || 0);
       </div>
     </template>
     <template #content>
-      <div class="s_box">
+      <div class="s_box config_content">
         <div class="config_title">项目配置</div>
         <div class="s_area config_item_wrapper">
           <div class="config_item">
@@ -55,42 +55,46 @@ const top = computed(() => statusBarHeight.value || 0);
   }
 }
 
-.config_title {
-  padding: 20rx;
-  font-size: 30rx;
-  font-weight: bold;
-  color: $textColorPrimary;
-}
+.config_content {
+  padding-top: v-bind(menuHeight);
 
-.config_item_wrapper {
-  width: 70vw;
-  padding: 0 20rx;
-  margin-bottom: 30rx;
-  overflow: auto;
+  .config_title {
+    padding: 20rx;
+    font-size: 30rx;
+    font-weight: bold;
+    color: $textColorPrimary;
+  }
 
-  .config_item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 90rx;
-    color: $textColorRegular;
+  .config_item_wrapper {
+    width: 70vw;
+    padding: 0 20rx;
+    margin-bottom: 30rx;
+    overflow: auto;
 
-    .config_label {
-      flex-shrink: 0;
-    }
+    .config_item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 90rx;
+      color: $textColorRegular;
 
-    .config_input {
-      box-sizing: content-box;
-      flex: 1;
-      padding: 8rx 15rx;
-      margin-left: 12rx;
-      border: 1px solid $borderColorBase;
-      border-radius: 8rx;
-    }
+      .config_label {
+        flex-shrink: 0;
+      }
 
-    :deep() {
-      .config_input_ph {
-        color: $textColorPlaceholder;
+      .config_input {
+        box-sizing: content-box;
+        flex: 1;
+        padding: 8rx 15rx;
+        margin-left: 12rx;
+        border: 1px solid $borderColorBase;
+        border-radius: 8rx;
+      }
+
+      :deep() {
+        .config_input_ph {
+          color: $textColorPlaceholder;
+        }
       }
     }
   }

@@ -191,6 +191,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .layout_page {
   position: relative;
+  padding-bottom: constant(safe-area-inset-bottom); // 获取底部安全距离，兼容 iOS 设备
+  padding-bottom: env(safe-area-inset-bottom); // 获取底部安全距离，兼容 iPhone X 及以上设备
 
   &.is_bg::before {
     position: absolute;
@@ -261,8 +263,6 @@ onMounted(() => {
 
 .tab_box {
   display: flex;
-  padding-bottom: constant(safe-area-inset-bottom); // 获取底部安全距离，兼容 iOS 设备
-  padding-bottom: env(safe-area-inset-bottom); // 获取底部安全距离，兼容 iPhone X 及以上设备
   line-height: 1;
   background-color: #fff;
   box-shadow: 0 -6rx 12rx 0 rgb(182 182 182 / 10%);
