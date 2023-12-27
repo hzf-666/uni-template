@@ -44,7 +44,7 @@
     "mexp": "readonly",
     "psw": "readonly",
     "cache": "readonly",
-    "_regex": "readonly",
+    "regex": "readonly",
     "typeOf": "readonly",
     "deepCopy": "readonly",
     "recursion": "readonly",
