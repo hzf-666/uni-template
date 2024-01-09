@@ -42,8 +42,12 @@ const props = defineProps({
     type: [Boolean],
     default: () => (false),
   },
+  refresher: {
+    type: [Function],
+    default: () => (null),
+  },
 });
-const { headerClass, padding, showHeader, showBar, beforeBack, title, headerBg, bg, titleCenter, showBack } = toRefs(props);
+const { headerClass, padding, showHeader, showBar, beforeBack, title, headerBg, bg, titleCenter, showBack, refresher } = toRefs(props);
 
 const bindHeaderClass = computed(() => setClass(headerClass.value));
 
@@ -111,9 +115,26 @@ const tabBarList = ref([
 
 const pages = getCurrentPages(), page = pages[pages.length - 1], isPageActive = pagePath => pagePath === page?.route;
 const pageTitle = computed(() => {
-  const target = pagesJson.pages.find(item => item.path === page?.route);
+  let target = pagesJson.pages.find(item => item.path === page?.route);
+  if (!target) {
+    for (let i = 0; i < pagesJson.subPackages.length; i++) {
+      const item = pagesJson.subPackages[i];
+      target = item.pages.find(p => `${ item.root }/${ p.path }` === page?.route);
+      if (target) break;
+    }
+  }
   return title.value === null ? target.style.navigationBarTitleText : title.value;
 });
+
+const isShowView = ref(true);
+function onRefresh() {
+  delayPromise(refresher.value?.(), 500).then(() => {
+    isShowView.value = false;
+    nextTick(() => {
+      isShowView.value = true;
+    });
+  });
+}
 
 function onBack() {
   if (beforeBack.value) {
@@ -155,14 +176,18 @@ onMounted(() => {
 
     <slot name="up" :header-height="headerHeight" :tab-height="tabHeight" />
 
-    <scroll-view
-      class="page_main s_area"
-      :style="{ 'border': '0 solid transparent', ...areaPdObj }"
-      scroll-y
-    >
-      <slot />
-      <slot name="content" :header-height="headerHeight" :tab-height="tabHeight" />
-    </scroll-view>
+    <div class="page_main s_area">
+      <scroll-view
+        v-if="isShowView"
+        :style="{ height: '100%', 'border': '0 solid transparent', ...areaPdObj }"
+        scroll-y
+        :refresher-enabled="!!refresher"
+        @refresherrefresh="onRefresh"
+      >
+        <slot />
+        <slot name="content" :header-height="headerHeight" :tab-height="tabHeight" />
+      </scroll-view>
+    </div>
 
     <slot name="down" :header-height="headerHeight" :tab-height="tabHeight" />
 

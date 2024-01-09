@@ -68,10 +68,14 @@ const props = defineProps({
     type: [String],
     default: () => (null),
   },
+  refresher: {
+    type: [Function],
+    default: () => (null),
+  },
 });
 const {
-  myClass, myStyle, contentClass, contentStyle, itemClass, itemStyle, list,
-  height, maxHeight, load, noMore, loadingText, noMoreText, immediate, distance, delay, scrollIntoView,
+  myClass, myStyle, contentClass, contentStyle, itemClass, itemStyle, list, height, maxHeight,
+  load, noMore, loadingText, noMoreText, immediate, distance, delay, scrollIntoView, refresher,
 } = toRefs(props);
 
 const emit = defineEmits(['scroll']);
@@ -97,7 +101,6 @@ const style = computed(() => {
   if (maxHeight.value) result.maxHeight = maxHeight.value;
   return result;
 });
-const lowerThreshold = computed(() => distance.value > 0 ? distance.value : 1);
 
 const loading = ref(false);
 const onLoad = computed(() => {
@@ -114,11 +117,14 @@ watch(immediate, (newVal) => {
 }, {
   immediate: true,
 });
+const scrollRect = query.selectAll('#scrollContent, .infinite_scroll').boundingClientRect(() => {});
+const viewHeight = ref(0);
 function getHeight() {
   return new Promise(resolve => {
-    query.selectAll('#scrollContent, .infinite_scroll').boundingClientRect(async(data) => {
-      resolve({ viewHeight: data[0].height, contentHeight: data[1].height });
-    }).exec();
+    scrollRect.exec(([data]) => {
+      viewHeight.value = data[0].height;
+      resolve({ viewHeight: viewHeight.value, contentHeight: data[1].height });
+    });
   });
 }
 async function onLoadImmediately() {
@@ -144,38 +150,63 @@ function handleScrollToLower() {
   }, delay.value);
 }
 
+let timer = null;
+const scrollOffset = query.select('.infinite_scroll').scrollOffset(() => {});
 function onScroll(...args) {
+  timer && clearTimeout(timer);
+  timer = setTimeout(() => {
+    scrollOffset.exec(([, { scrollTop, scrollHeight }]) => {
+      if (scrollTop + viewHeight.value > scrollHeight - distance.value) {
+        handleScrollToLower();
+      }
+    });
+  }, 200);
   emit('scroll', ...args);
+}
+
+const isShowView = ref(true), showText = ref(true);
+function onRefresh() {
+  showText.value = false;
+  delayPromise(refresher.value?.(), 500).then(() => {
+    isShowView.value = false;
+    showText.value = true;
+    nextTick(() => {
+      isShowView.value = true;
+    });
+  });
 }
 </script>
 
 <template>
   <scroll-view
+    v-if="isShowView"
     class="infinite_scroll"
     :class="bindClass"
     :style="{ ...style, ...bindStyle }"
-    :lower-threshold="lowerThreshold"
     :scroll-into-view="scrollIntoView"
     scroll-y
-    @scrolltolower="handleScrollToLower"
+    :refresher-enabled="!!refresher"
+    @refresherrefresh="onRefresh"
     @scroll="onScroll"
   >
-    <div id="scrollContent" :class="bindContentClass" :style="bindContentStyle">
-      <template v-if="list">
-        <div
-          v-for="(item, i) in list"
-          :id="'scrollItem' + i"
-          :key="i"
-          :class="bindItemClass(item)"
-          :style="bindItemStyle(item)"
-        >
-          <slot name="item" :index="i" :item="item" />
-        </div>
-      </template>
-      <slot v-else />
-    </div>
+    <div style="height: 0;">
+      <div id="scrollContent" :class="bindContentClass" :style="bindContentStyle">
+        <template v-if="list">
+          <div
+            v-for="(item, i) in list"
+            :id="'scrollItem' + i"
+            :key="i"
+            :class="bindItemClass(item)"
+            :style="bindItemStyle(item)"
+          >
+            <slot name="item" :index="i" :item="item" />
+          </div>
+        </template>
+        <slot v-else />
+      </div>
 
-    <div v-if="loading || noMore" class="scroll_text">{{ loading ? loadingText : noMoreText }}</div>
+      <div v-if="showText && (loading || noMore)" class="scroll_text">{{ loading ? loadingText : noMoreText }}</div>
+    </div>
   </scroll-view>
 </template>
 

@@ -119,17 +119,23 @@ export function openUrl(...args) {
 
   // #ifdef MP-WEIXIN
   function openFile(url, optionsToast = {}) {
+    const getHeaderArray = target => {
+      if (typeof target === 'string') {
+        return target.split(';');
+      }
+      return target;
+    };
     uni.showToast({ icon: 'loading', title: '查看中...', mask: true, ...optionsToast });
     uni.downloadFile({
       url,
       success: (res) => {
-        const contentType = res.header['Content-Type'];
+        const contentType = getHeaderArray(res.header['Content-Type']);
         if (!contentType) {
           uni.showToast({ icon: 'none', title: '文件失效' });
           return;
         }
-        const [mine, fileType] = contentType.split('/');
-        if (mine == 'image') {
+        const [mime, fileType] = contentType[0].split('/');
+        if (mime == 'image') {
           uni.hideToast();
           uni.previewImage({ urls: [url] });
           return;
