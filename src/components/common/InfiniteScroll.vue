@@ -156,7 +156,7 @@ function onScroll(...args) {
   timer && clearTimeout(timer);
   timer = setTimeout(() => {
     scrollOffset.exec(([, { scrollTop, scrollHeight }]) => {
-      if (scrollTop + viewHeight.value > scrollHeight - distance.value) {
+      if (Math.ceil(scrollTop + viewHeight.value) >= scrollHeight - distance.value) {
         handleScrollToLower();
       }
     });
