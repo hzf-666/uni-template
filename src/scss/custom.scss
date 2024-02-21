@@ -12,13 +12,15 @@
 }
 /* #endif */
 
-body,
 page {
+  @include safeArea("pb");
+
   height: 100%;
   overflow: auto;
   font-family: $fontFamilyBase;
   font-size: $fontSizeBase;
   color: $textColorRegular;
+  transform: translateZ(0); // 解决 IOS 下 position: fixed; 层叠问题
 }
 
 /* 单行文本省略样式 */

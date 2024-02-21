@@ -1,5 +1,5 @@
 <script setup>
-const { statusBarHeight, menuHeight, menuPaddingRight } = storeToRefs(store.useGlobal());
+const { statusBarHeight, menuHeight, menuPaddingRight, isIOS } = storeToRefs(store.useGlobal());
 
 onLaunch(() => {
   // console.log('App Launch');
@@ -10,6 +10,7 @@ onLaunch(() => {
       statusBarHeight.value = `${ e.statusBarHeight }px`;
       menuHeight.value = `${ height + (top - e.statusBarHeight) * 2 }px`;
       menuPaddingRight.value = `${ width + (e.screenWidth - right) * 2 }px`;
+      isIOS.value = e.platform === 'ios';
     },
   });
 });

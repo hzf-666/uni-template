@@ -12,6 +12,26 @@ $zIndexPopper: 2000;
 $colorPrimary: #409eff;
 $colorDanger: #f56c6c;
 
+@mixin safeArea($k) {
+  $key: null;
+
+  @if $k == "pb" {
+    $key: "padding-bottom";
+  }
+
+  @else if $k == "bb" {
+    $key: "border-bottom-width";
+
+    border-bottom-color: #fff;
+    border-bottom-style: solid;
+  }
+
+  @if $key {
+    #{$key}: constant(safe-area-inset-bottom); // 获取底部安全距离，兼容 iOS 设备
+    #{$key}: env(safe-area-inset-bottom); // 获取底部安全距离，兼容 iPhone X 及以上设备
+  }
+}
+
 /* stylelint-disable scss/no-global-function-names */
 @function str-split($string, $separator) {
   $result: ();

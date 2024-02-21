@@ -6,6 +6,14 @@
     "unit-no-unknown": [true, {
       "ignoreUnits": ["rpx", "rx"]
     }],
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": [
+          "background-clip"
+        ]
+      }
+    ],
     "selector-type-no-unknown": [true, {
       "ignoreTypes": ["page"]
     }],

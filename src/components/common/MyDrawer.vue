@@ -149,12 +149,14 @@ function hide() {
   _modelValue.value = false;
 }
 
+const { maskCount } = storeToRefs(store.useGlobal());
 const _modelValue = ref(modelValue.value), visible = ref(modelValue.value);
 const durationStr = computed(() => `${ duration.value }ms`);
 watch(_modelValue, (newVal) => {
   emit('update:modelValue', newVal);
   if (newVal) {
     visible.value = true;
+    maskCount.value++;
     setTimeout(() => {
       contentComputedStyle.value.transform = 'none';
     }, 100);
@@ -162,6 +164,7 @@ watch(_modelValue, (newVal) => {
     contentComputedStyle.value.transform = transform.value;
     setTimeout(() => {
       visible.value = false;
+      maskCount.value--;
     }, duration.value);
   }
 });
@@ -174,45 +177,54 @@ watch(modelValue, (newVal) => {
   <div class="my_drawer" :class="bindClass" :style="{...bindStyle, display: inline ? 'inline-block' : 'block'}">
     <slot name="reference" :show="show" />
 
-    <div
-      v-if="visible"
-      class="my_drawer_mask"
-      :class="bindMaskClass"
-      :style="{...bindMaskStyle, ...maskComputedStyle}"
-      @click="hide()"
-    >
+    <!-- #ifdef H5 -->
+    <Teleport to="body">
+      <!-- #endif -->
       <div
-        class="my_drawer_content"
-        :class="bindContentClass"
-        :style="{
+        v-if="visible"
+        class="my_drawer_mask"
+        :class="bindMaskClass"
+        :style="{...bindMaskStyle, ...maskComputedStyle}"
+        @click="hide()"
+      >
+        <div
+          class="my_drawer_content"
+          :class="bindContentClass"
+          :style="{
           ...bindContentStyle,
           ...contentComputedStyle,
           overflow: lockScroll ? 'hidden' : 'auto',
-        }"
-        @click.stop=""
-      >
-        <slot />
-        <slot name="content" :hide="hide" />
+          }"
+          @click.stop=""
+        >
+          <slot />
+          <slot name="content" :hide="hide" />
+        </div>
       </div>
-    </div>
+    <!-- #ifdef H5 -->
+    </Teleport>
+    <!-- #endif -->
   </div>
 </template>
 
+<style lang="scss">
+.my_drawer_mask {
+  @include safeArea("bb");
+
+  position: fixed;
+  z-index: $zIndexPopper;
+  overflow: hidden;
+  background-color: $maskColorBase;
+}
+
+.my_drawer_content {
+  position: absolute;
+  background-color: #fff;
+  transition: transform v-bind(durationStr);
+}
+</style>
 <style lang="scss" scoped>
 .my_drawer {
   position: relative;
-
-  .my_drawer_mask {
-    position: fixed;
-    z-index: $zIndexPopper;
-    overflow: hidden;
-    background-color: $maskColorBase;
-  }
-
-  .my_drawer_content {
-    position: absolute;
-    background-color: #fff;
-    transition: transform v-bind(durationStr);
-  }
 }
 </style>

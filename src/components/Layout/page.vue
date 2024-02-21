@@ -51,7 +51,7 @@ const { headerClass, padding, showHeader, showBar, beforeBack, title, headerBg, 
 
 const bindHeaderClass = computed(() => setClass(headerClass.value));
 
-const { statusBarHeight, menuHeight, menuPaddingRight } = storeToRefs(store.useGlobal());
+const { statusBarHeight, menuHeight, menuPaddingRight, maskCount, isIOS } = storeToRefs(store.useGlobal());
 const _statusBarHeight = computed(() => statusBarHeight.value ? '-' + statusBarHeight.value : 0);
 const _menuHeight = computed(() => menuHeight.value ? menuHeight.value : rx(80));
 
@@ -155,6 +155,16 @@ onMounted(() => {
     if (data[1]) tabHeight.value = data[1].height + 'px';
   }).exec();
 });
+
+const scrollTop = ref(0);
+const isMask = computed(() => isIOS.value && maskCount.value > 0);
+let scrollingTop = 0;
+function onScroll(e) {
+  scrollingTop = e.detail.scrollTop;
+}
+watch(isMask, (newVal) => {
+  if (!newVal) scrollTop.value = scrollingTop;
+});
 </script>
 
 <template>
@@ -177,16 +187,24 @@ onMounted(() => {
     <slot name="up" :header-height="headerHeight" :tab-height="tabHeight" />
 
     <div class="page_main s_area">
-      <scroll-view
-        v-if="isShowView"
-        :style="{ height: '100%', 'border': '0 solid transparent', ...areaPdObj }"
-        scroll-y
-        :refresher-enabled="!!refresher"
-        @refresherrefresh="onRefresh"
-      >
+      <div v-if="isMask" :style="{position: 'relative', top: `-${scrollingTop}px`}">
         <slot />
         <slot name="content" :header-height="headerHeight" :tab-height="tabHeight" />
-      </scroll-view>
+      </div>
+      <template v-else>
+        <scroll-view
+          v-if="isShowView"
+          :style="{ height: '100%', 'border': '0 solid transparent', ...areaPdObj }"
+          scroll-y
+          :scroll-top="scrollTop"
+          :refresher-enabled="!!refresher"
+          @scroll="onScroll"
+          @refresherrefresh="onRefresh"
+        >
+          <slot />
+          <slot name="content" :header-height="headerHeight" :tab-height="tabHeight" />
+        </scroll-view>
+      </template>
     </div>
 
     <slot name="down" :header-height="headerHeight" :tab-height="tabHeight" />
@@ -216,8 +234,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .layout_page {
   position: relative;
-  padding-bottom: constant(safe-area-inset-bottom); // 获取底部安全距离，兼容 iOS 设备
-  padding-bottom: env(safe-area-inset-bottom); // 获取底部安全距离，兼容 iPhone X 及以上设备
 
   &.is_bg::before {
     position: absolute;
@@ -284,6 +300,10 @@ onMounted(() => {
       font-size: 34rx;
     }
   }
+}
+
+.page_main {
+  overflow: hidden;
 }
 
 .tab_box {

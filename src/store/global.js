@@ -4,6 +4,8 @@ export default (storeName) => defineStore(storeName, {
     statusBarHeight: '',
     menuHeight: '',
     menuPaddingRight: '',
+    maskCount: 0,
+    isIOS: false,
   }),
   getters: {
   },

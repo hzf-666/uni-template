@@ -92,6 +92,7 @@ function hide() {
   _modelValue.value = false;
 }
 
+const { maskCount } = storeToRefs(store.useGlobal());
 const _modelValue = ref(modelValue.value), visible = ref(modelValue.value);
 const durationStr = computed(() => `${ duration.value }ms`);
 watch(_modelValue, (newVal) => {
@@ -99,6 +100,7 @@ watch(_modelValue, (newVal) => {
   if (newVal) {
     contentComputedStyle.value.opacity = 0;
     visible.value = true;
+    maskCount.value++;
     setTimeout(() => {
       contentComputedStyle.value.opacity = 1;
     }, 100);
@@ -106,6 +108,7 @@ watch(_modelValue, (newVal) => {
     contentComputedStyle.value.opacity = 0;
     setTimeout(() => {
       visible.value = false;
+      maskCount.value--;
     }, duration.value);
   }
 });
@@ -118,63 +121,74 @@ watch(modelValue, (newVal) => {
   <div class="my_dialog" :class="bindClass" :style="{...bindStyle, display: inline ? 'inline-block' : 'block'}">
     <slot name="reference" :show="show" />
 
-    <div
-      v-if="visible"
-      class="my_dialog_mask"
-      :class="[{is_lock: lockScroll}, ...bindMaskClass]"
-      :style="{...bindMaskStyle, ...maskComputedStyle}"
-      @click="hide()"
-    >
+    <!-- #ifdef H5 -->
+    <Teleport to="body">
+      <!-- #endif -->
       <div
-        class="my_dialog_content"
-        :class="bindContentClass"
-        :style="{
+        v-if="visible"
+        class="my_dialog_mask"
+        :class="[{is_lock: lockScroll}, ...bindMaskClass]"
+        :style="{...bindMaskStyle, ...maskComputedStyle}"
+        @click="hide()"
+      >
+        <div
+          class="my_dialog_content"
+          :class="bindContentClass"
+          :style="{
           ...bindContentStyle,
           ...contentComputedStyle,
           overflow: lockScroll ? 'hidden' : 'auto',
-        }"
-        @click.stop=""
-      >
-        <slot />
-        <slot name="content" :hide="hide" />
+          }"
+          @click.stop=""
+        >
+          <slot />
+          <slot name="content" :hide="hide" />
+        </div>
       </div>
-    </div>
+      <!-- #ifdef H5 -->
+    </Teleport>
+    <!-- #endif -->
   </div>
 </template>
 
+<style lang="scss">
+.my_dialog_mask {
+  @include safeArea("bb");
+
+  position: fixed;
+  z-index: $zIndexPopper;
+  overflow: hidden;
+  background-color: $maskColorBase;
+
+  &.is_lock {
+    overflow: auto;
+
+    &::before,
+    &::after {
+      display: block;
+      height: v-bind(_contentTop);
+      content: "";
+    }
+  }
+
+  &:not(.is_lock) .my_dialog_content {
+    position: absolute;
+    top: v-bind(_contentTop);
+    left: 50%;
+    max-height: calc(100% - (v-bind(_contentTop) * 2));
+    transform: translateX(-50%);
+  }
+}
+
+.my_dialog_content {
+  width: v-bind(_contentWidth);
+  margin: auto;
+  background-color: #fff;
+  transition: opacity v-bind(durationStr);
+}
+</style>
 <style lang="scss" scoped>
 .my_dialog {
-  .my_dialog_mask {
-    position: fixed;
-    z-index: $zIndexPopper;
-    overflow: hidden;
-    background-color: $maskColorBase;
-
-    &.is_lock {
-      overflow: auto;
-
-      &::before,
-      &::after {
-        display: block;
-        height: v-bind(_contentTop);
-        content: "";
-      }
-    }
-
-    &:not(.is_lock) .my_dialog_content {
-      position: absolute;
-      top: v-bind(_contentTop);
-      left: 50%;
-      max-height: calc(100% - (v-bind(_contentTop) * 2));
-      transform: translateX(-50%);
-    }
-  }
-
-  .my_dialog_content {
-    width: v-bind(_contentWidth);
-    margin: auto;
-    background-color: #fff;
-    transition: opacity v-bind(durationStr);
-  }
+  position: relative;
 }
 </style>
