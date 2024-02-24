@@ -113,58 +113,88 @@ export function rx(size) {
 export function openUrl(...args) {
   if (!args[0]) return;
 
-  // #ifndef  MP-WEIXIN
+  // #ifdef H5
   window.open(...args);
   // #endif
 
-  // #ifdef MP-WEIXIN
-  function openFile(url, optionsToast = {}) {
-    const getHeaderArray = target => {
-      if (typeof target === 'string') {
-        return target.split(';');
-      }
-      return target;
-    };
-    uni.showToast({ icon: 'loading', title: '查看中...', mask: true, ...optionsToast });
+  // #ifndef H5
+  const [url, options = {}, { success, fail } = {}] = args;
+  const getHeaderArray = target => {
+    if (typeof target === 'string') {
+      return target.split(';');
+    }
+    return target;
+  };
+  if (!options.duration) options.duration = 500;
+  uni.showToast({ icon: 'loading', title: '正在打开...', mask: true, ...options });
+  delayPromise(new Promise(resolve => {
     uni.downloadFile({
       url,
-      success: (res) => {
-        const contentType = getHeaderArray(res.header['Content-Type']);
-        if (!contentType) {
-          uni.showToast({ icon: 'none', title: '文件失效' });
-          return;
-        }
-        const [mime, fileType] = contentType[0].split('/');
-        if (mime == 'image') {
-          uni.hideToast();
-          uni.previewImage({ urls: [url] });
-          return;
-        }
-        const filePath = res.tempFilePath;
-        uni.openDocument({
-          filePath,
-          showMenu: true,
-          fileType,
-          success() {
-            uni.hideToast();
-          },
-          fail() {
-            uni.showToast({ icon: 'none', title: '打开失败' });
-          }
-        });
+      success: (e) => {
+        if (e.statusCode != 200) return;
+        resolve(e);
       },
-      fail: (e) => {
-        console.error(e);
-        uni.showToast({ icon: 'none', title: '下载失败' });
-      }
+      complete: (e) => {
+        if (e.statusCode == 200) return;
+        resolve(e);
+      },
     });
-  }
-  openFile(...args);
+  }), options.duration).then((res) => {
+    if (res.statusCode == 200) {
+      const contentType = getHeaderArray(res.header['Content-Type']);
+      if (!contentType) return uni.showToast({ icon: 'none', title: '无效文件' });
+      const [mime] = contentType[0].split('/');
+      const opts = {
+        success() {
+          uni.hideToast();
+          success?.();
+        },
+        fail() {
+          uni.showToast({ icon: 'none', title: '打开失败' });
+          fail?.();
+        },
+      };
+      if (mime == 'image') {
+        uni.previewImage({ urls: [url], ...opts });
+      } else {
+        uni.openDocument({ filePath: res.tempFilePath, showMenu: true, ...opts });
+      }
+    } else {
+      console.error(res);
+      uni.showToast({ icon: 'none', title: '文件路径无法打开' });
+      fail?.();
+    }
+  });
   // #endif
 }
 
 export function closeUrl(...args) {
   window.close(...args);
+}
+
+export function downloadUrl(url, { success, fail } = {}) {
+  // #ifdef H5
+  fetch(url).then(response => response.blob()).then(blob => {
+    const objectUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = url.replace(/.*\//, '');
+    link.style.position = 'fixed';
+    link.style.zIndex = -999;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(objectUrl);
+    success?.();
+  }).catch(() => {
+    console.error('下载失败');
+    fail?.();
+  });
+  // #endif
+
+  // #ifndef H5
+  openUrl(url, { icon: 'none', title: '打开文件后请手动保存下载', duration: 1500 });
+  // #endif
 }
 
 export function isEqual(source, comparison) { // 判断两个数据是否完全相等

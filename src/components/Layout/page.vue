@@ -303,6 +303,7 @@ watch(isMask, (newVal) => {
 }
 
 .page_main {
+  position: relative;
   overflow: hidden;
 }
 
