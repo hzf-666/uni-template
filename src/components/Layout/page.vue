@@ -178,7 +178,7 @@ watch(isMask, (newVal) => {
         :menu-padding-right="menuPaddingRight"
       >
         <div v-if="pageTitle || showBack" class="page_default_header" :class="{is_header_bg: headerBg, is_pr: menuPaddingRight}">
-          <img v-if="pages.length > 1" class="page_header_back fs_0" src="/static/icon/title_return.png" @click="onBack()">
+          <img v-if="pages.length > 1" class="page_header_back fs_0" src="/static/icon/back.png" @click="onBack()">
           <span v-if="pageTitle" class="page_header_title els" :class="{is_center: titleCenter}">{{ pageTitle }}</span>
         </div>
       </slot>
